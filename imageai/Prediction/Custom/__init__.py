@@ -153,7 +153,7 @@ class ModelTraining:
 
 
 
-    def trainModel(self, num_objects, num_experiments=200, enhance_data=False, batch_size = 32, initial_learning_rate=1e-3, show_network_summary=False, training_image_size = 224, continue_from_model=None, transfer_from_model=None, transfer_with_full_training=True, initial_num_objects = None, save_full_model = False):
+    def trainModel(self, num_objects, num_experiments=200, enhance_data=False, batch_size = 32, initial_learning_rate=1e-3, show_network_summary=False, training_image_size = 224, continue_from_model=None, transfer_from_model=None, transfer_with_full_training=True, initial_num_objects = None, save_full_model = False, color_mode = "rgb"):
 
         """
                  'trainModel()' function starts the model actual training. It accepts the following values:
@@ -309,17 +309,21 @@ class ModelTraining:
 
         train_datagen = ImageDataGenerator(
             rescale=1. / 255,
-            horizontal_flip=enhance_data, height_shift_range=height_shift, width_shift_range=width_shift)
+            horizontal_flip=enhance_data, height_shift_range=height_shift, width_shift_range=width_shift,
+            color_mode=color_mode)
 
         test_datagen = ImageDataGenerator(
-            rescale=1. / 255)
+            rescale=1. / 255,
+            color_mode=color_mode)
 
         train_generator = train_datagen.flow_from_directory(self.__train_dir, target_size=(training_image_size, training_image_size),
                                                             batch_size=batch_size,
-                                                            class_mode="categorical")
+                                                            class_mode="categorical",
+                                                            color_mode=color_mode)
         test_generator = test_datagen.flow_from_directory(self.__test_dir, target_size=(training_image_size, training_image_size),
                                                           batch_size=batch_size,
-                                                          class_mode="categorical")
+                                                          class_mode="categorical",
+                                                          color_mode=color_mode)
 
         class_indices = train_generator.class_indices
         class_json = {}
