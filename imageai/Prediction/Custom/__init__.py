@@ -153,7 +153,7 @@ class ModelTraining:
 
 
 
-    def trainModel(self, num_objects, num_experiments=200, enhance_data=False, batch_size = 32, initial_learning_rate=1e-3, show_network_summary=False, training_image_size = 224, continue_from_model=None, transfer_from_model=None, transfer_with_full_training=True, initial_num_objects = None, save_full_model = False, color_mode = "rgb"):
+    def trainModel(self, num_objects, num_experiments=200, enhance_data=False, batch_size = 32, initial_learning_rate=1e-3, show_network_summary=False, training_image_size = 224, continue_from_model=None, transfer_from_model=None, transfer_with_full_training=True, initial_num_objects = None, save_full_model = False, color_mode = "rgb", channels = 3):
 
         """
                  'trainModel()' function starts the model actual training. It accepts the following values:
@@ -202,7 +202,7 @@ class ModelTraining:
 
 
 
-        image_input = Input(shape=(training_image_size[0], training_image_size[1], color_mode))
+        image_input = Input(shape=(training_image_size[0], training_image_size[1], channels))
         if (self.__modelType == "squeezenet"):
             if (continue_from_model != None):
                 model = SqueezeNet(weights="continued", num_classes=num_classes, model_input=image_input, model_path=continue_from_model)
@@ -313,12 +313,10 @@ class ModelTraining:
 
         train_datagen = ImageDataGenerator(
             rescale=1. / 255,
-            horizontal_flip=enhance_data, height_shift_range=height_shift, width_shift_range=width_shift,
-            color_mode=color_mode)
+            horizontal_flip=enhance_data, height_shift_range=height_shift, width_shift_range=width_shift)
 
         test_datagen = ImageDataGenerator(
-            rescale=1. / 255,
-            color_mode=color_mode)
+            rescale=1. / 255)
 
         train_generator = train_datagen.flow_from_directory(self.__train_dir, target_size=training_image_size,
                                                             batch_size=batch_size,
@@ -464,7 +462,7 @@ class CustomImagePrediction:
 
         if (self.__modelLoaded == False):
 
-            image_input = Input(shape=(self.__input_image_size, self.__input_image_size, color_mode))
+            image_input = Input(shape=(self.__input_image_size, self.__input_image_size, channels))
 
             if (self.__modelType == ""):
                 raise ValueError("You must set a valid model type before loading the model.")
@@ -552,7 +550,7 @@ class CustomImagePrediction:
 
         if (self.__modelLoaded == False):
 
-            image_input = Input(shape=(self.__input_image_size, self.__input_image_size, color_mode))
+            image_input = Input(shape=(self.__input_image_size, self.__input_image_size, channels))
 
 
             model = load_model(filepath=self.modelPath)
