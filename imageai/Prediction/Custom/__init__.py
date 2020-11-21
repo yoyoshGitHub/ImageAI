@@ -185,6 +185,10 @@ class ModelTraining:
                 :param save_full_model:
                 :return:
                 """
+
+        if not isinstance(training_image_size, tuple):
+          training_image_size = (training_image_size, training_image_size)
+
         self.__num_epochs = num_experiments
         self.__initial_learning_rate = initial_learning_rate
         lr_scheduler = LearningRateScheduler(self.lr_schedule)
@@ -192,13 +196,13 @@ class ModelTraining:
 
         num_classes = num_objects
 
-        if(training_image_size < 100):
-            warnings.warn("The specified training_image_size {} is less than 100. Hence the training_image_size will default to 100.".format(training_image_size))
-            training_image_size = 100
+        if(training_image_size[0] * training_image_size[1] < 10000):
+            warnings.warn("The specified training_image_size {} is less than 100. Hence the training_image_size will default to 100.".format(training_image_size[0]))
+            training_image_size = (100, 100)
 
 
 
-        image_input = Input(shape=(training_image_size, training_image_size, 3))
+        image_input = Input(shape=(training_image_size[0] training_image_size[1], color_mode))
         if (self.__modelType == "squeezenet"):
             if (continue_from_model != None):
                 model = SqueezeNet(weights="continued", num_classes=num_classes, model_input=image_input, model_path=continue_from_model)
@@ -316,11 +320,11 @@ class ModelTraining:
             rescale=1. / 255,
             color_mode=color_mode)
 
-        train_generator = train_datagen.flow_from_directory(self.__train_dir, target_size=(training_image_size, training_image_size),
+        train_generator = train_datagen.flow_from_directory(self.__train_dir, target_size=training_image_size,
                                                             batch_size=batch_size,
                                                             class_mode="categorical",
                                                             color_mode=color_mode)
-        test_generator = test_datagen.flow_from_directory(self.__test_dir, target_size=(training_image_size, training_image_size),
+        test_generator = test_datagen.flow_from_directory(self.__test_dir, target_size=training_image_size,
                                                           batch_size=batch_size,
                                                           class_mode="categorical",
                                                           color_mode=color_mode)
@@ -460,7 +464,7 @@ class CustomImagePrediction:
 
         if (self.__modelLoaded == False):
 
-            image_input = Input(shape=(self.__input_image_size, self.__input_image_size, 3))
+            image_input = Input(shape=(self.__input_image_size, self.__input_image_size, color_mode))
 
             if (self.__modelType == ""):
                 raise ValueError("You must set a valid model type before loading the model.")
@@ -548,7 +552,7 @@ class CustomImagePrediction:
 
         if (self.__modelLoaded == False):
 
-            image_input = Input(shape=(self.__input_image_size, self.__input_image_size, 3))
+            image_input = Input(shape=(self.__input_image_size, self.__input_image_size, color_mode))
 
 
             model = load_model(filepath=self.modelPath)
