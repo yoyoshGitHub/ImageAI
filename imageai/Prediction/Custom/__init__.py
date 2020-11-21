@@ -202,7 +202,7 @@ class ModelTraining:
 
 
 
-        image_input = Input(shape=(training_image_size[0] training_image_size[1], color_mode))
+        image_input = Input(shape=(training_image_size[0], training_image_size[1], color_mode))
         if (self.__modelType == "squeezenet"):
             if (continue_from_model != None):
                 model = SqueezeNet(weights="continued", num_classes=num_classes, model_input=image_input, model_path=continue_from_model)
